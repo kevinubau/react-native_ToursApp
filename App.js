@@ -1,6 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl  } from 'react-native';
+import { Alert,StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl ,TouchableHighlight } from 'react-native';
 import axios from 'react-native-axios';
+import ListActivities from './src/components/ListActivities';
+
 export default class App extends React.Component {
 
   constructor(){
@@ -10,6 +12,7 @@ export default class App extends React.Component {
       placeName:'',
       activities: [],
       refreshing: true
+     
     };
     /*this.state = {
       placeName:'',
@@ -83,54 +86,65 @@ export default class App extends React.Component {
 
   };
 
-  onPressButton = (e) => {
-    alert("usted escribio: "+this.state.placeName);
+  _onPressButton(item) {
+    Alert.alert(
+      "ID "+item.activityID+'\n'+
+      "Descripción: "+item.descripcion
+    );
+  };
+
+  reformatDate(date){
+    var partsOfStr = date.split('-');
+    console.log(partsOfStr);
+    //partsOfStr[0], partsOfStr[1]-1, partsOfStr[2];
+    return "hola";
   };
 
   render() {
-    
-    const activities = this.state.activities.map( (act, index) =>(
-        <View>
-          <Text >{act.nombre}</Text>
-          <Image
-            style={{width: 50, height: 50}}
-            source={{uri: act.img}}
-          />
-          
-        </View>
-    ));
+  
     
     return (
       
       <View style={styles.container}>
 
-      <Text style={styles.titleText}>ACTIVIDADES</Text>
+        
+        
+        <Text style={styles.titleText}>ACTIVIDADES</Text>
 
-       
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh.bind(this)}
-          />
-        }
-        data={this.state.activities}
-        renderItem={({item}) => 
-          
-          <View key={item.activityID} style={styles.activtiesStyle}>
-            <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
-            <Text  style={{fontSize: 14}} >ID: {item.activityID}</Text>
-            <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>
-            
-            <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
-            <Image
-              style={{width: 120, height: 120}}
-              source={{ uri: item.images[0] }}
+        {/*<ListActivities mensaje='EJEMPLO DE COMPONENT'/>*/}
+
+
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
             />
-          
-        </View>
+          }
+          data={this.state.activities}
+          renderItem={({item}) => 
+          <TouchableHighlight onPress={()=>this._onPressButton(item)} underlayColor="white">
+              <View key={item.activityID} style={styles.activtiesStyle} >
+
+                <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
+                <Text  style={{fontSize: 14}} >Lugar de Salida: {item.lugarSalida}</Text>
+                <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>            
+                <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
+                <Text  style={{fontSize: 14}} >Fecha: {item.fechaInicio}</Text>
+
+                
+                <Image                
+                  style={{width: 120, height: 120}}
+                  source={{ uri: item.images[0] }}
+                />
+              
+              
+            
+            </View>
+          </TouchableHighlight>
         
       }
+      
       
       />
       
@@ -155,6 +169,7 @@ const styles = StyleSheet.create({
     margin: 20,
     fontSize: 20,
     fontWeight: 'bold',
+    width: '70%'
   },
 
   activtiesStyle: {
