@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button,Image, FlatList  } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl  } from 'react-native';
 import axios from 'react-native-axios';
 export default class App extends React.Component {
 
@@ -8,7 +8,8 @@ export default class App extends React.Component {
 
     this.state = {
       placeName:'',
-      activities: []
+      activities: [],
+      refreshing: true
     };
     /*this.state = {
       placeName:'',
@@ -35,16 +36,41 @@ export default class App extends React.Component {
           var actsList = []
           const a = Object.values(response.data);
           a.map( (element, index) => {
-            alert(element.images[0][0]);
+            //alert(element.images[0][0]);
             actsList.push(element);
           });
-          this.setState({activities: actsList});
+          this.setState({activities: actsList, refreshing: false});//this.setState({refreshing: false})
         })
         .catch(err => {
           console.log(err, 'Error');
         });
+    
+
         
         
+  }
+
+
+  _onRefresh() {
+    this.setState({refreshing: true});
+    axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivities')
+        .then(response => {
+          
+
+          var actsList = []
+          const a = Object.values(response.data);
+          a.map( (element, index) => {
+            //alert(element.images[0][0]);
+            actsList.push(element);
+          });
+          this.setState({activities: actsList, refreshing: false});//{this.setState({refreshing: false})}
+        })
+        .catch(err => {
+          console.log(err, 'Error');
+        });
+
+    
+
   }
   
 
@@ -82,30 +108,40 @@ export default class App extends React.Component {
 
        
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh.bind(this)}
+          />
+        }
         data={this.state.activities}
         renderItem={({item}) => 
           
-          <View style={styles.activtiesStyle}>
-            <Text style={{fontSize: 16, fontWeight: 'bold',}} >{item.lugarDestino}</Text>
+          <View key={item.activityID} style={styles.activtiesStyle}>
+            <Text  style={{fontSize: 16, fontWeight: 'bold',}} >{item.lugarDestino}</Text>
             <Image
               style={{width: 100, height: 100}}
               source={{uri: item.images[0] }}
             />
           
         </View>
+        
       }
+      
       />
       
       
        </View>
+       
     );
+    
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 22,
+    
     flexDirection: 'column',  
     backgroundColor: 'white',
     
