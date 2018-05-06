@@ -118,10 +118,14 @@ export default class App extends React.Component {
         renderItem={({item}) => 
           
           <View key={item.activityID} style={styles.activtiesStyle}>
-            <Text  style={{fontSize: 16, fontWeight: 'bold',}} >{item.lugarDestino}</Text>
+            <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
+            <Text  style={{fontSize: 14}} >ID: {item.activityID}</Text>
+            <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>
+            
+            <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
             <Image
-              style={{width: 100, height: 100}}
-              source={{uri: item.images[0] }}
+              style={{width: 120, height: 120}}
+              source={{ uri: item.images[0] }}
             />
           
         </View>
@@ -141,7 +145,7 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
+    marginTop: 10,
     flexDirection: 'column',  
     backgroundColor: 'white',
     
