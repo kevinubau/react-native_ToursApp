@@ -6,13 +6,16 @@ import {
    TouchableHighlight,
    View,
    StyleSheet,
-   Button
+   Button,
+   Picker,
+   
 } from 'react-native';
 
 
 class ModalSelect extends Component {
    state = {
       modalVisible: false,
+      language: 'select'
    }
    toggleModal(visible) {
       this.setState({ modalVisible: visible });
@@ -26,20 +29,32 @@ class ModalSelect extends Component {
                visible = {this.state.modalVisible}
                onRequestClose = {() => { console.log("Modal has been closed.") } }>
                <View style = {styles.modal}>
-                  <Text style = {styles.text}>Modal is open!</Text>
+                  <Text style = {styles.text}>Filtro</Text>
                   
-                  <TouchableHighlight onPress = {() => {
-                     this.toggleModal(!this.state.modalVisible)}}>
-                     
-                     
+                  <Picker
+                    selectedValue={this.state.language}
+                    style={{ height: 50, width: 100 }}
+                    onValueChange={(itemValue, itemIndex) => this.setState({language: itemValue})}>
+                    <Picker.Item label="Java" value="java" />
+                    <Picker.Item label="JavaScript" value="js" />
+                </Picker>
+
+
                      <Button
                         onPress={() => {
                             this.toggleModal(!this.state.modalVisible)}}
                         title="Cancelar"
                         color="#841584"
                      />
+
+                     <Button
+                        onPress={() => {
+                            this.toggleModal(!this.state.modalVisible)}}
+                        title="Aceptar"
+                        color="#841584"
+                     />
                   
-                  </TouchableHighlight>
+                  
                </View>
             </Modal>
             
