@@ -1,8 +1,10 @@
 import React from 'react';
-import { Alert,StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl ,TouchableHighlight } from 'react-native';
+import { Alert,StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl ,TouchableHighlight, ScrollView } from 'react-native';
 import axios from 'react-native-axios';
 import ListActivities from './src/components/ListActivities';
-
+//import ModalSelect from './src/components/ModalSelect';
+import ModalSelect from './src/components/ModalSelect';
+//import fs from 'fs';
 export default class App extends React.Component {
 
   constructor(){
@@ -40,6 +42,16 @@ export default class App extends React.Component {
           const a = Object.values(response.data);
           a.map( (element, index) => {
             //alert(element.images[0][0]);
+
+            /*let base64String = elment.images[0]; // Not a real image
+              // Remove header
+              let base64Image = base64String.split(';base64,').pop();
+            fs.writeFile('image.png', base64Image, {encoding: 'base64'}, function(err) {
+                console.log('File created');
+            });*/
+            
+            
+
             actsList.push(element);
           });
           this.setState({activities: actsList, refreshing: false});//this.setState({refreshing: false})
@@ -110,38 +122,43 @@ export default class App extends React.Component {
         
         
         <Text style={styles.titleText}>ACTIVIDADES</Text>
-
+        
         {/*<ListActivities mensaje='EJEMPLO DE COMPONENT'/>*/}
 
-
+        <ModalSelect/>
         <FlatList
+
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
               onRefresh={this._onRefresh.bind(this)}
             />
+
           }
+
           data={this.state.activities}
+
           renderItem={({item}) => 
-          <TouchableHighlight onPress={()=>this._onPressButton(item)} underlayColor="white">
-              <View key={item.activityID} style={styles.activtiesStyle} >
+          
+            <TouchableHighlight onPress={()=>this._onPressButton(item)} underlayColor="white">
+                <View key={item.activityID} style={styles.activtiesStyle} >
 
-                <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
-                <Text  style={{fontSize: 14}} >Lugar de Salida: {item.lugarSalida}</Text>
-                <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>            
-                <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
-                <Text  style={{fontSize: 14}} >Fecha: {item.fechaInicio}</Text>
+                  <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
+                  <Text  style={{fontSize: 14}} >Lugar de Salida: {item.lugarSalida}</Text>
+                  <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>            
+                  <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
+                  <Text  style={{fontSize: 14}} >Fecha: {item.fechaInicio}</Text>
 
+                  
+                  <Image                
+                    style={{width: 120, height: 120}}
+                    source={{ uri: "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png" }}
+                  />
                 
-                <Image                
-                  style={{width: 120, height: 120}}
-                  source={{ uri: item.images[0] }}
-                />
+                
               
-              
-            
-            </View>
-          </TouchableHighlight>
+              </View>
+            </TouchableHighlight>
         
       }
       
