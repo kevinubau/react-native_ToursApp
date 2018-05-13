@@ -28,6 +28,7 @@ class ModalSelect extends Component {
             <Modal animationType = {"slide"} transparent = {true}
                visible = {this.state.modalVisible}
                onRequestClose = {() => { console.log("Modal has been closed.") } }>
+               
                <View style = {styles.modal}>
                   <Text style = {styles.text}>Filtro</Text>
                   

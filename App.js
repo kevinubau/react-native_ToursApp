@@ -1,10 +1,23 @@
 import React from 'react';
-import { Alert,StyleSheet, Text, View, TextInput, Button,Image, FlatList,RefreshControl ,TouchableHighlight, ScrollView } from 'react-native';
+import {
+  Alert,
+  StyleSheet, 
+  Text, 
+  View, 
+  TextInput, 
+  Button, 
+  Image, 
+  FlatList, 
+  RefreshControl, 
+  TouchableHighlight, 
+  ScrollView } from 'react-native';
+
 import axios from 'react-native-axios';
 import ListActivities from './src/components/ListActivities';
-//import ModalSelect from './src/components/ModalSelect';
 import ModalSelect from './src/components/ModalSelect';
-//import fs from 'fs';
+import FilterSelect from './src/components/FilterSelect';
+
+
 export default class App extends React.Component {
 
   constructor(){
@@ -13,7 +26,9 @@ export default class App extends React.Component {
     this.state = {
       placeName:'',
       activities: [],
-      refreshing: true
+      refreshing: true,
+      keyFilter: '',
+      valueFilter:''
      
     };
     /*this.state = {
@@ -33,40 +48,30 @@ export default class App extends React.Component {
   
     };*/
 
-    axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivities')
+    /*axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivities')
         .then(response => {
-          //console.log(response, 'Proceso exitoso!');
-    
-          //console.log(response);
+      
           var actsList = []
           const a = Object.values(response.data);
           a.map( (element, index) => {
-            //alert(element.images[0][0]);
-
-            /*let base64String = elment.images[0]; // Not a real image
-              // Remove header
-              let base64Image = base64String.split(';base64,').pop();
-            fs.writeFile('image.png', base64Image, {encoding: 'base64'}, function(err) {
-                console.log('File created');
-            });*/
-            
-            
-
+    
             actsList.push(element);
           });
-          this.setState({activities: actsList, refreshing: false});//this.setState({refreshing: false})
+          this.setState({activities: actsList, refreshing: false});
         })
         .catch(err => {
           console.log(err, 'Error');
-        });
+        });*/
+        this.handlerFilter = this.handlerFilter.bind(this)
     
 
         
         
-  }
+  };
 
 
   _onRefresh() {
+
     this.setState({refreshing: true});
     axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivities')
         .then(response => {
@@ -75,10 +80,10 @@ export default class App extends React.Component {
           var actsList = []
           const a = Object.values(response.data);
           a.map( (element, index) => {
-            //alert(element.images[0][0]);
+            
             actsList.push(element);
           });
-          this.setState({activities: actsList, refreshing: false});//{this.setState({refreshing: false})}
+          this.setState({activities: actsList, refreshing: false});
         })
         .catch(err => {
           console.log(err, 'Error');
@@ -86,7 +91,7 @@ export default class App extends React.Component {
 
     
 
-  }
+  };
   
 
   placeNameChangedHandler = val => {
@@ -108,24 +113,63 @@ export default class App extends React.Component {
   reformatDate(date){
     var partsOfStr = date.split('-');
     console.log(partsOfStr);
-    //partsOfStr[0], partsOfStr[1]-1, partsOfStr[2];
     return "hola";
   };
+
+
+
+  handlerFilter(key, value) {
+    //e.preventDefault()
+    /*this.setState({
+      activities: e
+    });*/
+    console.log("https://excursionesdatabase.firebaseapp.com/filtrarKeyValue?key="+key+"&value="+value);
+    axios.get("https://excursionesdatabase.firebaseapp.com/filtrarKeyValue?key="+key.toLowerCase()+"&value="+value)
+        .then(response => {
+          
+
+          var actsList = []
+          console.log(response.data);
+          if(response.data != null){
+            const a = Object.values(response.data);
+            a.map( (element, index) => {
+            
+              actsList.push(element);
+           });
+          }
+          
+          console.log(actsList);
+          
+          this.setState({activities: actsList, refreshing: false});
+        })
+        .catch(err => {
+          console.log(err, 'Error');
+        });
+
+  }
 
   render() {
   
     
     return (
       
-      <View style={styles.container}>
 
-        
-        
+     
+      <View style={styles.container}>
+      
+
         <Text style={styles.titleText}>ACTIVIDADES</Text>
         
-        {/*<ListActivities mensaje='EJEMPLO DE COMPONENT'/>*/}
+        <FilterSelect handler = {this.handlerFilter}/>
 
-        <ModalSelect/>
+        <FlatList
+
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />}/>
+        {this.state.activities.length > 0 ?
         <FlatList
 
           refreshControl={
@@ -134,36 +178,49 @@ export default class App extends React.Component {
               onRefresh={this._onRefresh.bind(this)}
             />
 
-          }
+        }
 
-          data={this.state.activities}
+        data={this.state.activities}
 
-          renderItem={({item}) => 
-          
-            <TouchableHighlight onPress={()=>this._onPressButton(item)} underlayColor="white">
-                <View key={item.activityID} style={styles.activtiesStyle} >
-
-                  <Text  style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
-                  <Text  style={{fontSize: 14}} >Lugar de Salida: {item.lugarSalida}</Text>
-                  <Text  style={{fontSize: 14}} >Precio: {item.precio}</Text>            
-                  <Text  style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
-                  <Text  style={{fontSize: 14}} >Fecha: {item.fechaInicio}</Text>
-
-                  
-                  <Image                
-                    style={{width: 120, height: 120}}
-                    source={{ uri: "https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png" }}
-                  />
-                
-                
-              
-              </View>
-            </TouchableHighlight>
+        renderItem={({item, index}) => 
         
-      }
+          <TouchableHighlight key={item.activityID+'t'} onPress={()=>this._onPressButton(item)} underlayColor="white">
+              <View key={item.activityID} style={styles.activtiesStyle} >
+
+                <Text key={item.activityID+'a'} style={{fontSize: 18, fontWeight: 'bold'}} >{item.lugarDestino}</Text>
+                <Text key={item.activityID+'b'} style={{fontSize: 14}} >Lugar de Salida: {item.lugarSalida}</Text>
+                <Text key={item.activityID+'c'} style={{fontSize: 14}} >Precio: {item.precio}</Text>            
+                <Text key={item.activityID+'d'} style={{fontSize: 14}} >Cupo: {item.cupo}</Text>
+                <Text key={item.activityID+'e'} style={{fontSize: 14}} >Categoria: {item.categoria}</Text>
+                <Text key={item.activityID+'f'} style={{fontSize: 14}} >Fecha: {new Date(item.fechaInicio).toLocaleDateString("es")}</Text>
+
+                
+                <Image  
+                  key={item.activityID+'img'}
+                                
+                  style={{width: 120, height: 120}}
+                  source={{ uri: item.images[0] }}
+                />
+              
+              
+            
+            </View>
+          </TouchableHighlight>
       
-      
+        }
+    
+    
       />
+        :(
+          <View>
+
+            <Text style={{textAlign: 'center', margin: 10, fontSize: 20}}>NO HAY ACTIVIDADES</Text>
+          </View>
+        )
+        
+        
+        }
+        
       
       
        </View>
