@@ -16,7 +16,8 @@ import axios from 'react-native-axios';
 import ListActivities from './src/components/ListActivities';
 import ModalSelect from './src/components/ModalSelect';
 import FilterSelect from './src/components/FilterSelect';
-
+import Hamburger from './src/components/Hamburger';
+import Boton from './src/components/Boton';
 
 export default class App extends React.Component {
 
@@ -31,29 +32,14 @@ export default class App extends React.Component {
       valueFilter:''
      
     };
-    /*this.state = {
-      placeName:'',
-      activities: [
-        {"lugarDestino": "Visita Rio Celeste","precio": 2000, "cupo":5,"img":"https://media-cdn.tripadvisor.com/media/photo-s/0e/cd/3e/65/rio-celeste-waterfall.jpg"},
-  
-        {"lugarDestino": "Camping en Parque nacional","precio": 3000, "cupo":15,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"}, 
-        {"lugarDestino": "Paseo a Playa Nosara","precio": 1000, "cupo":2,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"},
-        {"lugarDestino": "Caminata Volcán Arenal","precio": 2000, "cupo":5,"img":"https://www.nacion.com/resizer/YYI9EWU1LCtHXs2J1p02Gz-BV1E=/600x0/center/middle/filters:quality(100)/arc-anglerfish-arc2-prod-gruponacion.s3.amazonaws.com/public/ZXBYNEECDJGH5PH4RFHFG5Q6G4.jpg"},
-        {"lugarDestino": "Camping en Parque nacional","precio": 3000, "cupo":15,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"}, 
-        {"lugarDestino": "Paseo a Playa Nosara","precio": 1000, "cupo":2,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"},
-        {"lugarDestino": "Caminata Volcán Arenal","precio": 2000, "cupo":5,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"},
-        {"lugarDestino": "Camping en Parque nacional","precio": 3000, "cupo":15,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"}, 
-        {"lugarDestino": "Paseo a Playa Nosara","precio": 1000, "cupo":2,"img":"https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-image-128.png"}
-      ]
-  
-    };*/
+    
 
-    /*axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivities')
+    /*axios.get('https://excursionesdatabase.firebaseapp.com/getAllActivitiess')
         .then(response => {
       
           var actsList = []
-          const a = Object.values(response.data);
-          a.map( (element, index) => {
+          const activitiesList = Object.values(response.data);
+          activitiesList.map( (element, index) => {
     
             actsList.push(element);
           });
@@ -62,8 +48,9 @@ export default class App extends React.Component {
         .catch(err => {
           console.log(err, 'Error');
         });*/
-        this.handlerFilter = this.handlerFilter.bind(this)
-    
+
+        this.handlerFilter = this.handlerFilter.bind(this);
+        
 
         
         
@@ -119,10 +106,8 @@ export default class App extends React.Component {
 
 
   handlerFilter(key, value) {
-    //e.preventDefault()
-    /*this.setState({
-      activities: e
-    });*/
+   
+    this.setState({refreshing: true});
     console.log("https://excursionesdatabase.firebaseapp.com/filtrarKeyValue?key="+key+"&value="+value);
     axios.get("https://excursionesdatabase.firebaseapp.com/filtrarKeyValue?key="+key.toLowerCase()+"&value="+value)
         .then(response => {
@@ -160,7 +145,11 @@ export default class App extends React.Component {
 
         <Text style={styles.titleText}>ACTIVIDADES</Text>
         
+        
+
         <FilterSelect handler = {this.handlerFilter}/>
+        <Boton texto={"aceptar"}/>
+        <Boton texto={"cancelar"}/>
 
         <FlatList
 
@@ -178,7 +167,7 @@ export default class App extends React.Component {
               onRefresh={this._onRefresh.bind(this)}
             />
 
-        }
+          }
 
         data={this.state.activities}
 
@@ -214,7 +203,7 @@ export default class App extends React.Component {
         :(
           <View>
 
-            <Text style={{textAlign: 'center', margin: 10, fontSize: 20}}>NO HAY ACTIVIDADES</Text>
+            <Text style={{flex: 1, textAlign: 'center', margin: 10, fontSize: 20}}>NO HAY ACTIVIDADES</Text>
           </View>
         )
         
